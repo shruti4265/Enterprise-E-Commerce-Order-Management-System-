@@ -5,9 +5,9 @@ from product_management.models import Category, Inventory, Product
 logger = get_logger(__name__)
 
 
-def update_product(pid, name, category, quantity):
+def update_product(product_id, product_name, category, quantity):
     with get_db_session() as session:
-        product = session.query(Product).filter_by(product_id=pid).first()
+        product = session.query(Product).filter_by(product_id=product_id).first()
         if product is None:
             print("Product Not Found")
             return
@@ -18,11 +18,11 @@ def update_product(pid, name, category, quantity):
             session.add(category_record)
             session.flush()
 
-        product.name = name
+        product.name = product_name
         product.category = category_record
         if product.inventory is None:
             product.inventory = Inventory(quantity=quantity)
         else:
             product.inventory.quantity = quantity
-        logger.info("Product updated: %s", pid)
+        logger.info("Product updated: %s", product_id)
     print("Product Updated Successfully")

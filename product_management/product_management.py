@@ -1,8 +1,8 @@
 from common.database import init_db
 from product_management.add_product import add_product
 from product_management.disable_product import disable_product
-from product_management.manage_price import update_price
-from product_management.search_product import search_by_category
+from product_management.manage_price import manage_price
+from product_management.search_product import search_product
 from product_management.update_product import update_product
 
 
@@ -34,9 +34,9 @@ def main():
                 int(input("New Quantity: ")),
             )
         elif choice == 3:
-            search_by_category(input("Enter Category: "))
+            search_product(input("Enter Category: "))
         elif choice == 4:
-            update_price(int(input("Product ID: ")), float(input("New Price: ")))
+            manage_price(int(input("Product ID: ")), float(input("New Price: ")))
         elif choice == 5:
             disable_product(int(input("Product ID: ")))
         elif choice == 6:

@@ -5,7 +5,7 @@ from product_management.models import Product
 logger = get_logger(__name__)
 
 
-def search_by_category(category):
+def search_product(category):
     with get_db_session() as session:
         products = (
             session.query(Product)
@@ -28,3 +28,7 @@ def search_by_category(category):
                 "Available" if product.is_active else "Unavailable",
             )
         logger.info("Products searched by category: %s", category)
+
+
+def search_by_category(category):
+    return search_product(category)

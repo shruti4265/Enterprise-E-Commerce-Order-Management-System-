@@ -5,13 +5,17 @@ from product_management.models import Product
 logger = get_logger(__name__)
 
 
-def update_price(pid, new_price):
+def manage_price(product_id, new_price):
     with get_db_session() as session:
-        product = session.query(Product).filter_by(product_id=pid).first()
+        product = session.query(Product).filter_by(product_id=product_id).first()
         if product is None:
             print("Product Not Found")
             return
 
         product.price = new_price
-        logger.info("Product price updated: %s", pid)
+        logger.info("Product price updated: %s", product_id)
     print("Price Updated Successfully")
+
+
+def update_price(product_id, new_price):
+    return manage_price(product_id, new_price)

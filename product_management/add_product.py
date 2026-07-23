@@ -5,7 +5,7 @@ from product_management.models import Category, Inventory, Product
 logger = get_logger(__name__)
 
 
-def add_product(pid, name, category, price, quantity):
+def add_product(product_id, product_name, category, price, quantity):
     with get_db_session() as session:
         category_record = session.query(Category).filter_by(name=category).first()
         if category_record is None:
@@ -14,13 +14,13 @@ def add_product(pid, name, category, price, quantity):
             session.flush()
 
         product = Product(
-            product_id=pid,
-            name=name,
+            product_id=product_id,
+            name=product_name,
             category=category_record,
             price=price,
             is_active=True,
         )
         product.inventory = Inventory(quantity=quantity)
         session.add(product)
-        logger.info("Product added: %s", pid)
+        logger.info("Product added: %s", product_id)
     print("Product Added Successfully")
