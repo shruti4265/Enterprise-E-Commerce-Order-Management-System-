@@ -9,7 +9,9 @@ from sqlalchemy.orm import (
     relationship
 )
 
-from sqlalchemy.sql import func
+from sqlalchemy.sql import (
+    func
+)
 
 from common.database import Base
 
@@ -31,8 +33,8 @@ class Inventory(Base):
     product_id = Column(
         Integer,
         ForeignKey("products.product_id"),
-        unique=True,
-        nullable=False
+        nullable=False,
+        unique=True
     )
 
     quantity = Column(

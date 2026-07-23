@@ -10,7 +10,9 @@ from sqlalchemy.orm import (
     relationship
 )
 
-from sqlalchemy.sql import func
+from sqlalchemy.sql import (
+    func
+)
 
 from common.database import Base
 
