@@ -1,6 +1,6 @@
 from common.database import get_db_session
 from common.logger import get_logger
-from product_management.models import Category, Product
+from product_management.models import Category, Inventory, Product
 
 logger = get_logger(__name__)
 
@@ -20,6 +20,9 @@ def update_product(pid, name, category, quantity):
 
         product.name = name
         product.category = category_record
-        product.inventory.quantity = quantity
+        if product.inventory is None:
+            product.inventory = Inventory(quantity=quantity)
+        else:
+            product.inventory.quantity = quantity
         logger.info("Product updated: %s", pid)
     print("Product Updated Successfully")
