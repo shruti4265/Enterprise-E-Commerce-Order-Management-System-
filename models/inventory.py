@@ -1,12 +1,22 @@
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import (
+    Column,
+    Integer,
+    DateTime,
+    ForeignKey
+)
+
+from sqlalchemy.orm import (
+    relationship
+)
+
 from sqlalchemy.sql import func
 
 from common.database import Base
 
+
+# -------------------------------------------------
+# Inventory Model
+# -------------------------------------------------
 
 class Inventory(Base):
 
@@ -47,3 +57,14 @@ class Inventory(Base):
         "Product",
         back_populates="inventory"
     )
+
+    def __repr__(self):
+
+        return (
+            f"Inventory("
+            f"inventory_id={self.inventory_id}, "
+            f"product_id={self.product_id}, "
+            f"quantity={self.quantity}, "
+            f"low_stock_threshold={self.low_stock_threshold}"
+            f")"
+        )

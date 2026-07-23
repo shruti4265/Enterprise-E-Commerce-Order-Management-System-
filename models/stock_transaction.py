@@ -1,13 +1,23 @@
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    ForeignKey
+)
+
+from sqlalchemy.orm import (
+    relationship
+)
+
 from sqlalchemy.sql import func
 
 from common.database import Base
 
+
+# -------------------------------------------------
+# Stock Transaction Model
+# -------------------------------------------------
 
 class StockTransaction(Base):
 
@@ -36,8 +46,7 @@ class StockTransaction(Base):
     )
 
     reason = Column(
-        String(150),
-        nullable=True
+        String(150)
     )
 
     created_at = Column(
@@ -49,3 +58,15 @@ class StockTransaction(Base):
         "Product",
         back_populates="stock_transactions"
     )
+
+    def __repr__(self):
+
+        return (
+            f"StockTransaction("
+            f"transaction_id={self.transaction_id}, "
+            f"product_id={self.product_id}, "
+            f"change_qty={self.change_qty}, "
+            f"transaction_type='{self.transaction_type}', "
+            f"reason='{self.reason}'"
+            f")"
+        )

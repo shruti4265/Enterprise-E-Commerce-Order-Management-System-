@@ -1,6 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 
 from common.database import SessionLocal
+from common.logger import logger
 
 from inventory_management.models.inventory import Inventory
 from inventory_management.models.stock_transaction import StockTransaction
@@ -10,15 +11,10 @@ from inventory_management.validations.inventory_validation import (
     validate_quantity
 )
 
-import logging
 
-
-logging.basicConfig(
-    filename="inventory.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
+# -------------------------------------------------
+# Add Stock
+# -------------------------------------------------
 
 def add_stock():
 
@@ -26,18 +22,34 @@ def add_stock():
 
     try:
 
-        product_id = int(input("Enter Product ID : "))
-        quantity = int(input("Enter Quantity to Add : "))
+        product_id = int(
+            input("Enter Product ID : ")
+        )
 
-        validate_product_id(product_id)
-        validate_quantity(quantity)
+        quantity = int(
+            input("Enter Quantity to Add : ")
+        )
 
-        inventory = session.query(Inventory).filter_by(
+        validate_product_id(
+            product_id
+        )
+
+        validate_quantity(
+            quantity
+        )
+
+        inventory = session.query(
+            Inventory
+        ).filter_by(
             product_id=product_id
         ).first()
 
         if inventory is None:
-            print("Inventory record not found.")
+
+            print(
+                "Inventory record not found."
+            )
+
             return
 
         inventory.quantity += quantity
@@ -49,28 +61,64 @@ def add_stock():
             reason="Stock Added"
         )
 
-        session.add(transaction)
+        session.add(
+            transaction
+        )
 
         session.commit()
 
-        logging.info(
-            f"Added {quantity} units to Product {product_id}"
+        logger.info(
+            f"Stock added for Product ID : {product_id}"
         )
 
-        print("Stock added successfully.")
+        print(
+            "Stock added successfully."
+        )
+
+    except ValueError as exception:
+
+        session.rollback()
+
+        logger.error(
+            exception
+        )
+
+        print(
+            exception
+        )
+
+    except SQLAlchemyError as exception:
+
+        session.rollback()
+
+        logger.error(
+            exception
+        )
+
+        print(
+            "Database Error."
+        )
 
     except Exception as exception:
 
         session.rollback()
 
-        logging.error(exception)
+        logger.error(
+            exception
+        )
 
-        print(exception)
+        print(
+            exception
+        )
 
     finally:
 
         session.close()
 
+
+# -------------------------------------------------
+# Reduce Stock
+# -------------------------------------------------
 
 def reduce_stock():
 
@@ -78,22 +126,42 @@ def reduce_stock():
 
     try:
 
-        product_id = int(input("Enter Product ID : "))
-        quantity = int(input("Enter Quantity to Reduce : "))
+        product_id = int(
+            input("Enter Product ID : ")
+        )
 
-        validate_product_id(product_id)
-        validate_quantity(quantity)
+        quantity = int(
+            input("Enter Quantity to Reduce : ")
+        )
 
-        inventory = session.query(Inventory).filter_by(
+        validate_product_id(
+            product_id
+        )
+
+        validate_quantity(
+            quantity
+        )
+
+        inventory = session.query(
+            Inventory
+        ).filter_by(
             product_id=product_id
         ).first()
 
         if inventory is None:
-            print("Inventory record not found.")
+
+            print(
+                "Inventory record not found."
+            )
+
             return
 
         if inventory.quantity < quantity:
-            print("Insufficient stock.")
+
+            print(
+                "Insufficient Stock."
+            )
+
             return
 
         inventory.quantity -= quantity
@@ -105,28 +173,40 @@ def reduce_stock():
             reason="Order Confirmed"
         )
 
-        session.add(transaction)
+        session.add(
+            transaction
+        )
 
         session.commit()
 
-        logging.info(
-            f"Reduced {quantity} units from Product {product_id}"
+        logger.info(
+            f"Stock reduced for Product ID : {product_id}"
         )
 
-        print("Stock reduced successfully.")
+        print(
+            "Stock reduced successfully."
+        )
 
     except Exception as exception:
 
         session.rollback()
 
-        logging.error(exception)
+        logger.error(
+            exception
+        )
 
-        print(exception)
+        print(
+            exception
+        )
 
     finally:
 
         session.close()
 
+
+# -------------------------------------------------
+# Check Stock
+# -------------------------------------------------
 
 def check_stock():
 
@@ -134,29 +214,62 @@ def check_stock():
 
     try:
 
-        product_id = int(input("Enter Product ID : "))
+        product_id = int(
+            input("Enter Product ID : ")
+        )
 
-        inventory = session.query(Inventory).filter_by(
+        validate_product_id(
+            product_id
+        )
+
+        inventory = session.query(
+            Inventory
+        ).filter_by(
             product_id=product_id
         ).first()
 
         if inventory is None:
-            print("Inventory record not found.")
+
+            print(
+                "Inventory record not found."
+            )
+
             return
 
-        print("\nCurrent Stock")
-        print("----------------------")
-        print(f"Product ID : {inventory.product_id}")
-        print(f"Quantity   : {inventory.quantity}")
+        print("\nInventory Details")
+        print("-" * 35)
+
+        print(
+            f"Product ID : {inventory.product_id}"
+        )
+
+        print(
+            f"Quantity : {inventory.quantity}"
+        )
+
+        print(
+            f"Low Stock Threshold : "
+            f"{inventory.low_stock_threshold}"
+        )
 
     except Exception as exception:
 
-        print(exception)
+        logger.error(
+            exception
+        )
+
+        print(
+            exception
+        )
 
     finally:
 
         session.close()
 
+
+# -------------------------------------------------
+# Display Inventory
+# -------------------------------------------------
 
 def display_inventory():
 
@@ -164,30 +277,45 @@ def display_inventory():
 
     try:
 
-        inventories = session.query(Inventory).all()
+        inventory_list = session.query(
+            Inventory
+        ).all()
 
-        if len(inventories) == 0:
-            print("Inventory is empty.")
+        if len(inventory_list) == 0:
+
+            print(
+                "Inventory is empty."
+            )
+
             return
 
-        print("\n========== Inventory ==========")
+        print("\nInventory Details")
+        print("=" * 50)
 
-        for inventory in inventories:
+        for inventory in inventory_list:
 
-            print(f"Inventory ID : {inventory.inventory_id}")
-            print(f"Product ID   : {inventory.product_id}")
-            print(f"Quantity     : {inventory.quantity}")
-            print(f"Low Stock    : {inventory.low_stock_threshold}")
-            print("-" * 40)
+            print(
+                inventory
+            )
 
     except Exception as exception:
 
-        print(exception)
+        logger.error(
+            exception
+        )
+
+        print(
+            exception
+        )
 
     finally:
 
         session.close()
 
+
+# -------------------------------------------------
+# Display Low Stock Products
+# -------------------------------------------------
 
 def display_low_stock():
 
@@ -195,31 +323,48 @@ def display_low_stock():
 
     try:
 
-        inventories = session.query(Inventory).filter(
-            Inventory.quantity <= Inventory.low_stock_threshold
+        inventory_list = session.query(
+            Inventory
+        ).filter(
+            Inventory.quantity <=
+            Inventory.low_stock_threshold
         ).all()
 
-        if len(inventories) == 0:
-            print("No low stock products.")
+        if len(inventory_list) == 0:
+
+            print(
+                "No Low Stock Products."
+            )
+
             return
 
-        print("\n====== Low Stock Products ======")
+        print("\nLow Stock Products")
+        print("=" * 50)
 
-        for inventory in inventories:
+        for inventory in inventory_list:
 
-            print(f"Product ID : {inventory.product_id}")
-            print(f"Quantity   : {inventory.quantity}")
-            print(f"Threshold  : {inventory.low_stock_threshold}")
-            print("-" * 40)
+            print(
+                inventory
+            )
 
     except Exception as exception:
 
-        print(exception)
+        logger.error(
+            exception
+        )
+
+        print(
+            exception
+        )
 
     finally:
 
         session.close()
 
+
+# -------------------------------------------------
+# Stock Transaction History
+# -------------------------------------------------
 
 def stock_transaction_history():
 
@@ -227,29 +372,36 @@ def stock_transaction_history():
 
     try:
 
-        transactions = session.query(
+        transaction_list = session.query(
             StockTransaction
         ).all()
 
-        if len(transactions) == 0:
-            print("No transaction history found.")
+        if len(transaction_list) == 0:
+
+            print(
+                "No Transaction History Found."
+            )
+
             return
 
-        print("\n===== Stock Transaction History =====")
+        print("\nStock Transaction History")
+        print("=" * 60)
 
-        for transaction in transactions:
+        for transaction in transaction_list:
 
-            print(f"Transaction ID : {transaction.transaction_id}")
-            print(f"Product ID     : {transaction.product_id}")
-            print(f"Quantity       : {transaction.change_qty}")
-            print(f"Type           : {transaction.transaction_type}")
-            print(f"Reason         : {transaction.reason}")
-            print(f"Date           : {transaction.created_at}")
-            print("-" * 50)
+            print(
+                transaction
+            )
 
     except Exception as exception:
 
-        print(exception)
+        logger.error(
+            exception
+        )
+
+        print(
+            exception
+        )
 
     finally:
 

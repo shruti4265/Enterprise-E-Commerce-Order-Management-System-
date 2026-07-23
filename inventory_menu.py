@@ -8,12 +8,14 @@ from inventory_management.services.inventory_service import (
 )
 
 
+
 def inventory_menu():
 
     while True:
 
-        print("\n" + "=" * 50)
-        print("        INVENTORY MANAGEMENT")
+        print("\n")
+        print("=" * 50)
+        print("     INVENTORY MANAGEMENT SYSTEM")
         print("=" * 50)
 
         print("1. Add Stock")
@@ -25,8 +27,8 @@ def inventory_menu():
         print("7. Exit")
 
         choice = input(
-            "\nEnter your choice: "
-        ).strip()
+            "\nEnter your choice : "
+        )
 
         if choice == "1":
 
@@ -54,12 +56,17 @@ def inventory_menu():
 
         elif choice == "7":
 
-            print("Exiting Inventory Module...")
+            print(
+                "\nExiting Inventory Management..."
+            )
+
             break
 
         else:
 
-            print("Invalid choice. Please try again.")
+            print(
+                "Invalid Choice. Please try again."
+            )
 
 
 if __name__ == "__main__":

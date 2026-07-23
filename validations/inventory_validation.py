@@ -1,22 +1,30 @@
-def validate_quantity(quantity):
-
-    if quantity <= 0:
-        raise ValueError(
-            "Quantity must be greater than zero."
-        )
-
-
-def validate_low_stock_threshold(threshold):
-
-    if threshold < 0:
-        raise ValueError(
-            "Low stock threshold cannot be negative."
-        )
+# -------------------------------------------------
+# Inventory Validation Functions
+# -------------------------------------------------
 
 
 def validate_product_id(product_id):
 
     if product_id <= 0:
+
         raise ValueError(
-            "Invalid Product ID."
+            "Product ID must be greater than zero."
+        )
+
+
+def validate_quantity(quantity):
+
+    if quantity <= 0:
+
+        raise ValueError(
+            "Quantity must be greater than zero."
+        )
+
+
+def validate_low_stock_threshold(low_stock_threshold):
+
+    if low_stock_threshold < 0:
+
+        raise ValueError(
+            "Low Stock Threshold cannot be negative."
         )
